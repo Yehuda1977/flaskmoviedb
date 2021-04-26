@@ -21,12 +21,16 @@ def query_movies(query, page):
 def movie_details(id):
     m = movie.details(id)
     
-
-    return flask.render_template("movie.html", movie=m)
+    #check that this movie hasn't been added before
+    if flask_login.current_user.is_authenticated: # The user is logged in
+        for mo in flask_login.current_user.fav_movies:
+            if mo.movie_id == m.id:
+                already_added = True
+            else:
+                already_added = False
     
-
-
-
+    return flask.render_template("movie.html", movie=m, already_added=already_added)
+    
 @app.route("/movie-search", methods=["GET", "POST"])
 def movie_search():
     form = forms.QueryForm()
@@ -45,15 +49,72 @@ def movie_search():
     
     # return flask.redirect(url_for("signup"))
 
-## Create a route:
-# Form with one single field "query"
-# Use the form data to display some articles about the query
 
-# 1) Create the form        v
-# 2) Create the route
-# 3) Create the template that displays the form
-# 4) Create the template that displays the articles
+@app.route("/add-movie/<int:id>", methods=["GET","POST"])
+def add_movie(id):
+    # return "Protected"
 
+    m = movie.details(id)
+    
+    #check that this movie hasn't been added before
+    if flask_login.current_user.is_authenticated: # The user is logged in
+        for mo in flask_login.current_user.fav_movies:
+            if mo.movie_id == m.id:
+                flask.flash("That movie was already added.", "danger")
+                return flask.redirect("/movie-search")
+    
+    
+    try:
+        movie_obj = models.Movie(title=m.title, description=m.overview, poster_path=m.poster_path, movie_id=m.id)
+        db.session.add(movie_obj)
+    except:
+        pass
+
+    db.session.commit()
+
+    if flask_login.current_user.is_authenticated: # The user is logged in
+        if movie_obj not in flask_login.current_user.fav_movies:
+            flask_login.current_user.fav_movies.append(movie_obj) # fav_movies is a list of <Book> objects
+            db.session.commit()
+
+    else:
+        flask.flash("You need to be logged in")
+        
+
+    # return flask.redirect("/sign-in")
+    if flask_login.current_user.is_authenticated:
+        return flask.render_template("user_profile.html", user=flask_login.current_user)
+    
+
+
+
+@app.route("/getmoviesindb")
+def getmovies():
+    all_movies = models.Movie.query.all()
+
+    return flask.render_template("movie", movies=all_movies)
+
+
+
+@app.route("/delete/<int:id>")
+def delete_fav(id):
+    pass
+
+
+@app.route("/movie/<int:movie_id>/comment/<int:comment_id>", methods=["GET", "POST"])
+def movie_comment(movie_id, comment_id):
+    flask_login.current_user.fav_movies.append(movie_obj)
+
+
+
+
+
+
+
+###########################################################
+###########################################################
+###########################################################
+###########################################################
 @app.route("/sign-up", methods=["GET","POST"])
 def signup():
     """
@@ -144,43 +205,6 @@ def profile_page(user_id):
 #        user
 # Step 4: In the quotes_list: Add a button next to each quote (if the user is authenticated) to make
 #        the quote his fav quote
-
-
-
-@app.route("/add-movie/<int:id>", methods=["GET","POST"])
-def add_movie(id):
-    # return "Protected"
-    
-    m = movie.details(id)
-    
-    try:
-        movie_obj = models.Movie(title=m.title, description=m.overview, poster_path=m.poster_path, movie_id=m.id)
-        db.session.add(movie_obj)
-    except:
-        pass
-
-    db.session.commit()
-
-    if flask_login.current_user.is_authenticated: # The user is logged in
-        if movie_obj not in flask_login.current_user.fav_movies:
-            flask_login.current_user.fav_movies.append(movie_obj) # fav_books is a list of <Book> objects
-            db.session.commit()
-
-    else:
-        flask.flash("You need to be logged in")
-        
-
-    return flask.redirect("/sign-in")
-
-@app.route("/movie/<int:movie_id>/comment/<int:comment_id>", methods=["GET", "POST"])
-def movie_comment(movie_id, comment_id):
-    pass
-
-@app.route("/delete/<int:id>")
-def delete_fav(id):
-    pass
-
-
 
 
 

@@ -9,10 +9,16 @@ from wtforms import validators as vld
 # every class attribute is a field in the form
 
 class QueryForm(flask_wtf.FlaskForm):
-
+    
     query = wtforms.StringField("Query: ", validators=[vld.DataRequired(message="Input something..")])
-
     submit = wtforms.SubmitField("Search")
+
+class CommentForm(flask_wtf.FlaskForm):
+
+    comment = wtforms.StringField("Comment: ", validators=[vld.DataRequired(message="Make a comment..")])
+    submit = wtforms.SubmitField("Submit Comment")
+
+
 
 
 class SignUpForm(flask_wtf.FlaskForm):

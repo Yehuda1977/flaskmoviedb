@@ -11,6 +11,17 @@ user2movies = db.Table(
     db.Column("movie_id", db.Integer(), db.ForeignKey("movie.id"), primary_key=True),
 ) # PK will be a combination of the two (1-2)
 
+movie2comments = db.Table(
+    "movie2comments", # name of the table
+    db.Column("comment_id", db.Integer(), db.ForeignKey("comment.id"), primary_key=True),
+    db.Column("movie_id", db.Integer(), db.ForeignKey("movie.id"), primary_key=True),
+) # PK will be a combination of the two (1-2)
+
+user2comments = db.Table(
+    "user2comments", # name of the table
+    db.Column("user_id", db.Integer(), db.ForeignKey("user.id"), primary_key=True),
+    db.Column("comment_id", db.Integer(), db.ForeignKey("comment.id"), primary_key=True),
+)
 
 @login_manager.user_loader
 def user_loader(user_id):
@@ -33,6 +44,8 @@ class User(db.Model, flask_login.UserMixin): # db.Model is required if you want 
 
     # Step 2: relationship
     fav_movies = db.relationship("Movie", backref="users", secondary=user2movies)
+    
+    user_comments = db.relationship("Comment", backref="users", secondary=user2comments)
 
 
 class Movie(db.Model):
@@ -48,5 +61,17 @@ class Movie(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    # author_id = db.Column(db.Integer(), db.ForeignKey("human.id"))
+    movie_comments = db.relationship("Comment", backref="comments", secondary=movie2comments)
 
+    
+
+class Comment(db.Model):
+
+    id = db.Column(db.Integer(), primary_key=True)
+
+    comment = db.Column(db.String(280))
+    author_id = db.Column(db.Integer(), db.ForeignKey("user.id"))
+
+
+
+    
