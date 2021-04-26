@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid bg-dark text-white">
+    <div class="p-5 mx-auto" style="width: 100%; text-align: center;">
+      
+        <h3 class="display-4">Welcome to Movie Search</h3>
+        <hr class="my-4" />
+        <div class="container" style="width: 65vw">
+            <div class="container my-4">
+                <button class="btn btn-outline-success"><a style="text-decoration: none; color: white" href="{{url_for('movie_search')}}">Click Here to Search for Movies</a></button>
+              </div>
+        {% if current_user.is_authenticated %}    
+          <div class="container my-4">
+            <button class="btn btn-outline-success"><a style="text-decoration: none; color: white" href="{{url_for('profile_page', user_id=current_user.id)}}">Click Here to See a List of Your Favorite Movies</a></button>
+          </div>
+        {% endif %}
+        </div>
+      
+    </div>
+  </div>    
+  <div class="container-fluid bg-dark text-white" style="height: 1000px;">
+{% endblock %}

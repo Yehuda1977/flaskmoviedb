@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if not current_user.is_authenticated %} 
+<div class="container-fluid bg-dark text-white">
+    <div class="p-5 mx-auto" style="width: 100%; text-align: center;">
+      
+    <h3 class="display-4">Sign Up For a Movie Search Account</h3>
+        <p class="lead">Be able to save your favorite movies for future reference.</p>
+        
+    <form class="d-flex" id="search-form" method="POST" action="">
+    
+        {{ form.hidden_tag() }}
+        <div class="container" style="width: 65vw">
+          
+            <div class="container my-4">
+            <p>{{ form.username.label }}
+                {{ form.username() }}</p>
+            
+            <p>
+                {{ form.password.label }}
+            {{ form.password() }}
+            </p>
+            
+            </div>
+        
+        {{ form.submit() }}
+    </div>  
+    </form>
+    <div class="container-fluid bg-dark text-white" style="height: 1000px;">
+    </div>
+{% endif %}
+{% if current_user.is_authenticated %}  
+<div class="p-5 mx-auto" style="width: 100%; text-align: center;">
+    <h3 class="display-4">Welcome {{ current_user.name }}</h3>
+    <div class="container my-4">
+        <button class="btn btn-outline-success"><a style="text-decoration: none; color: white" href="{{url_for('movie_search')}}">Click Here to Search for Movies</a></button>
+    </div>
+    <div class="container my-4">
+        <button class="btn btn-outline-success"><a style="text-decoration: none; color: white" href="{{url_for('profile_page', user_id=current_user.id)}}">Click Here to See a List of Your Favorite Movies</a></button>
+      </div>
+</div>
+<div class="container-fluid bg-dark text-white" style="height: 1000px;">
+</div>
+{% endif %}
+
+{% endblock %}

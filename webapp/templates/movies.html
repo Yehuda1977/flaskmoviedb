@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block stats %}
+<div class="my-2 d-none d-lg-block">
+    <button type="button" class="btn btn-outline-secondary mx-2">Searching for: {{query}}</button> 
+    <button type="button" class="btn btn-outline-secondary mx-2">Total Results: {{movies.total_results}}</button>
+    <button type="button" class="btn btn-outline-secondary mx-2">Current Page: {{page}} </button>
+    <button type="button" class="btn btn-outline-secondary mx-2">Total Pages: {{movies.total_pages}} </button>
+</div>
+{% endblock %}
+{% block content %}
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center pagination-lg">
+    
+      <li class="page-item {% if page == 1 %} disabled {% endif %}"><a class="page-link" href="http://127.0.0.1:5000/movies/query/{{query}}/{{page-1}}">Previous</a></li>
+   
+      <li class="page-item"><a class="page-link" href="#">{{page}}</a></li>
+      
+      <li class="page-item {% if page == movies.total_pages %} disabled {% endif %}"><a class="page-link" href="http://127.0.0.1:5000/movies/query/{{query}}/{{page+1}}">Next</a></li>
+    </ul>
+  </nav>
+
+
+  <div class="content bg-dark text-white">
+    <ul class="list-group">
+
+    {% if movies == None %}
+        <li class="list-group-item" ><h2> The movie you typed doesn't exist in our database. Sorry! </h2></li>
+        
+        {% else %}
+      <div class="row row-cols-1 row-cols-md-2 g-4">
+          {% for movie in movies.results %}
+            <div class="col-sm-6 col-md-4 col-lg-3 colMargin" style="padding-bottom: 10px">
+              <div id="card-class" class="card h-100" style="border: none; margin-bottom: 28px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" id="poster">
+                {% if movie.poster_path != None %}
+                <img class="card-img-top" src="http://image.tmdb.org/t/p/original{{movie.poster_path}}" width="200px">
+                {% else %}
+                <img class="card-img-top" src="https://s.studiobinder.com/wp-content/uploads/2019/06/Movie-Poster-Templates-StudioBinder.jpg.webp" width="200px" height="356px">
+                {% endif %} 
+                  <div class="card-body bg-dark text-white">
+                    <a style="text-decoration: none; color: white; position:absolute; bottom:0px" href="http://127.0.0.1:5000/movie/{{movie.id}}"><h5 class="card-title">{{movie.title}}</h5> </a>
+                  </div>
+              </div>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+      </div>
+  </div>        
+</div> 
+
+
+{% endblock %}

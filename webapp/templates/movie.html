@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="list-group list-group-flush">  
+    <div class="row" style="border: none; margin-bottom: 28px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); justify-content: center;">
+      <div  class="col-md-6 px-5 py-2">
+        <img src="http://image.tmdb.org/t/p/original{{movie.poster_path}}" alt="movieImage" width='90%'>
+      </div>  
+      <div class="col-md-6 px-5 py-2">
+        <h2>  {{movie.title}}</h2>
+        <h4> {{movie.tagline}}</h4>
+        <h4> Release Date: {{movie.release_date}} </h4>
+        <p> {{movie.overview}} </p>
+        {% if current_user.is_authenticated %}
+        {% if movie not in current_user.fav_movies %}
+        <button class="btn btn-outline-success"><a href="{{ url_for('add_movie', id=movie.id) }}">Add to favorites</a></button>
+        {% endif %}
+{% endif %}
+      </div>
+    </div>
+  </div>
+</div> 
+<!-- <p>{{ movie.title }}</p> -->
+
+
+   
+   
+{% endblock %}
