@@ -20,16 +20,16 @@ def query_movies(query, page):
 @app.route("/movie/<int:id>", methods=["GET", "POST"])
 def movie_details(id):
     m = movie.details(id)
-    
+    already_added = False
     #check that this movie hasn't been added before
     if flask_login.current_user.is_authenticated: # The user is logged in
         for mo in flask_login.current_user.fav_movies:
             if mo.movie_id == m.id:
                 already_added = True
-            else:
-                already_added = False
-    
+            
+                
     return flask.render_template("movie.html", movie=m, already_added=already_added)
+    
     
 @app.route("/movie-search", methods=["GET", "POST"])
 def movie_search():
