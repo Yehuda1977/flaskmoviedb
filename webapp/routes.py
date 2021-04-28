@@ -19,6 +19,8 @@ def query_movies(query, page):
 
 @app.route("/movie/<int:id>", methods=["GET", "POST"])
 def movie_details(id):
+    form = forms.CommentForm()
+
     m = movie.details(id)
     already_added = False
     #check that this movie hasn't been added before
@@ -26,6 +28,22 @@ def movie_details(id):
         for mo in flask_login.current_user.fav_movies:
             if mo.movie_id == m.id:
                 already_added = True
+    
+    if flask.request.method == "POST":
+        if form.validate_on_submit(): 
+            comment = form.comment.data
+
+            # Create user
+            comm = models.Comment(comment=comment)
+            # Add it to the DB
+            db.session.add(comm)
+            # Commit your changes
+            db.session.commit()
+            print(f"{comm} was added successfully")
+            
+            flask.flash("Comment added successfully !", "success")
+
+    return flask.render_template("movie.html", form=form)
             
                 
     return flask.render_template("movie.html", movie=m, already_added=already_added)
