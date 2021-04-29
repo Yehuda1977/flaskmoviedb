@@ -2,9 +2,11 @@ import flask, flask_login
 from flask import url_for
 import requests
 
-from . import app, db, fetch_movies       # . is webapp/
+from . import app, db, fetch_movies      # . is webapp/
+
 from . import forms, models
 from tmdbv3api import Movie
+from . import bcrypt
 
 movie = Movie()
 
@@ -19,8 +21,8 @@ def query_movies(query, page):
 
 @app.route("/movie/<int:id>", methods=["GET", "POST"])
 def movie_details(id):
-    form = forms.CommentForm()
-
+    # form = forms.CommentForm()
+    
     m = movie.details(id)
     already_added = False
     #check that this movie hasn't been added before
@@ -29,22 +31,20 @@ def movie_details(id):
             if mo.movie_id == m.id:
                 already_added = True
     
-    if flask.request.method == "POST":
-        if form.validate_on_submit(): 
-            comment = form.comment.data
+    # if flask.request.method == "POST":
+    #     if form.validate_on_submit(): 
+    #         comment = form.comment.data
 
-            # Create user
-            comm = models.Comment(comment=comment)
-            # Add it to the DB
-            db.session.add(comm)
-            # Commit your changes
-            db.session.commit()
-            print(f"{comm} was added successfully")
+    #         # Create user
+    #         comm = models.Comment(comment=comment)
+    #         # Add it to the DB
+    #         db.session.add(comm)
+    #         # Commit your changes
+    #         db.session.commit()
+    #         print(f"{comm} was added successfully")
             
-            flask.flash("Comment added successfully !", "success")
+    #         flask.flash("Comment added successfully !", "success")
 
-    return flask.render_template("movie.html", form=form)
-            
                 
     return flask.render_template("movie.html", movie=m, already_added=already_added)
     
@@ -70,23 +70,20 @@ def movie_search():
 
 @app.route("/add-movie/<int:id>", methods=["GET","POST"])
 def add_movie(id):
-    # return "Protected"
 
     m = movie.details(id)
-    
-    #check that this movie hasn't been added before
+    if flask_login.current_user.is_authenticated:
+        mo = models.Movie.query.filter_by(movie_id=id).first()
+    #check that this movie hasn't been added before to the general movie db
     if flask_login.current_user.is_authenticated: # The user is logged in
-        for mo in flask_login.current_user.fav_movies:
-            if mo.movie_id == m.id:
-                flask.flash("That movie was already added.", "danger")
-                return flask.redirect("/movie-search")
-    
-    
-    try:
-        movie_obj = models.Movie(title=m.title, description=m.overview, poster_path=m.poster_path, movie_id=m.id)
-        db.session.add(movie_obj)
-    except:
-        pass
+        if mo:
+            movie_obj = models.Movie.query.filter_by(movie_id=id).first()
+        else:
+            try:
+                movie_obj = models.Movie(title=m.title, description=m.overview, poster_path=m.poster_path, movie_id=m.id)
+                db.session.add(movie_obj)
+            except:
+                pass
 
     db.session.commit()
 
@@ -110,7 +107,7 @@ def add_movie(id):
 def getmovies():
     all_movies = models.Movie.query.all()
 
-    return flask.render_template("movie", movies=all_movies)
+    return flask.render_template("movies_in_db.html", movies=all_movies)
 
 
 
@@ -119,11 +116,35 @@ def delete_fav(id):
     pass
 
 
-@app.route("/movie/<int:movie_id>/comment/<int:comment_id>", methods=["GET", "POST"])
-def movie_comment(movie_id, comment_id):
-    flask_login.current_user.fav_movies.append(movie_obj)
+@app.route("/movie/<int:movie_id>/comment", methods=["GET", "POST"])
+def movie_comment(movie_id):
+    form = forms.CommentForm()
 
 
+    if flask_login.current_user.is_authenticated: # The user is logged in
+        mo = models.Movie.query.filter_by(movie_id=movie_id).first()
+
+        if mo:
+            if flask.request.method == "POST":
+                if form.validate_on_submit(): 
+                    if form.validate_on_submit():
+                        comment = form.comment.data
+
+                        # Create comment
+                        comm = models.Comment(content=comment)
+                        # Add it to the DB
+                        db.session.add(comm)
+                        # Commit your changes
+                        
+                        print(f"{comm} was added successfully")
+                        mo.movie_comments.append(comm)
+
+                        db.session.commit()
+                        flask.flash("Comment added successfully !", "success")
+
+                    
+    return flask.render_template("addcomment.html", form=form)
+    
 
 
 
@@ -145,16 +166,22 @@ def signup():
         if form.validate_on_submit():
             username = form.username.data
             password = form.password.data
+            hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+            
+            user = models.User.query.filter_by(name=username).first()
 
+            if not user:
             # Create user
-            user = models.User(name=username, password=password)
-            # Add it to the DB
-            db.session.add(user)
-            # Commit your changes
-            db.session.commit()
-            print(f"{username} was registered successfully")
-            flask_login.login_user(user)
-            flask.flash("User logged in successfully !", "success")
+                user = models.User(name=username, password=hashed_password)
+                # Add it to the DB
+                db.session.add(user)
+                # Commit your changes
+                db.session.commit()
+                print(f"{username} was registered successfully")
+                flask_login.login_user(user)
+                flask.flash("User logged in successfully !", "success")
+            else:
+                flask.flash("User with that name already exists. Please try again.", "danger")
 
     return flask.render_template("signup.html", form=form)
 
@@ -171,9 +198,10 @@ def signin():
             user = models.User.query.filter_by(name=username).first()
 
             # Check the provided password against the user's one
-            if user is not None and user.password == password:
+            if user and bcrypt.check_password_hash(user.password, password):
                 flask_login.login_user(user)
                 flask.flash("User logged in successfully !", "success")
+                return flask.render_template('user_profile.html', user=user)
             else:
                 flask.flash("Something went wrong.", "danger") # Put the message into the flashed messages
                 # To retrieve those messages: flask.get_flashed_messages()

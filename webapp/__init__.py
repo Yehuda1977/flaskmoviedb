@@ -2,9 +2,12 @@ import flask
 import flask_sqlalchemy
 import flask_migrate
 import flask_login
+from flask_bcrypt import Bcrypt
+
 
 app = flask.Flask(__name__)
 
+bcrypt = Bcrypt(app)
 # In case you have: "A secret key is required to use..."
 app.config["SECRET_KEY"] = "my-very-secret-key"
 
@@ -23,7 +26,14 @@ db = flask_sqlalchemy.SQLAlchemy(app)    # database bridge
 migrate = flask_migrate.Migrate(app, db) # Migrator
 login_manager = flask_login.LoginManager(app)
 
+
+
+
 from . import routes, models
+
+
+
+
 
 from tmdbv3api import TMDb
 tmdb = TMDb()
