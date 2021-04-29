@@ -107,8 +107,12 @@ def add_movie(id):
 def getmovies():
     all_movies = models.Movie.query.all()
 
-    return flask.render_template("movies_in_db.html", movies=all_movies)
-
+    if all_movies:
+        # Create users_list.html
+        return flask.render_template("movies_in_db.html", movies=all_movies)
+    else:
+        flask.flash("No movies have been added to the database.", "danger")
+        return flask.redirect('/')
 
 
 @app.route("/delete/<int:id>")
@@ -224,9 +228,12 @@ def users_list():
     # print(my_user.name)
     # print(my_user.password)
 
-
+    if users:
     # Create users_list.html
-    return flask.render_template("users_list.html", users=users)
+        return flask.render_template("users_list.html", users=users)
+    else:
+        flask.flash("No users have been added to the database.", "danger")
+        return flask.redirect('/')
 
 
 # Route: profile page
