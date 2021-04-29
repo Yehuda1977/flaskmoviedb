@@ -17,7 +17,12 @@ def home():
 @app.route("/movies/query/<query>/<page>")
 def query_movies(query, page):
     movies = fetch_movies.get_movies(query, page)
-    return flask.render_template("movies.html", movies=movies, page=int(page), query=query)
+    if movies['total_results'] == 0:
+        flask.flash("There are no movies that contain that word.", "danger")
+        return flask.redirect(url_for('movie_search'))
+    else:
+        return flask.render_template("movies.html", movies=movies, page=int(page), query=query)
+        
 
 @app.route("/movie/<int:id>", methods=["GET", "POST"])
 def movie_details(id):
@@ -58,7 +63,10 @@ def movie_search():
         if form.validate_on_submit(): # Check all the validators
             url = flask.url_for("query_movies", query=form.query.data, page=1)
             # url --> /article/query/rick
+            
             return flask.redirect(url)
+           
+                
 
 
     # case 2: Get request --> the user just wants to see the page
