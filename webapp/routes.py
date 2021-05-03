@@ -76,22 +76,20 @@ def movie_search():
     # return flask.redirect(url_for("signup"))
 
 
-@app.route("/add-movie/<int:id>", methods=["GET","POST"])
+@app.route("/add-movie/<int:id>")
 def add_movie(id):
 
     m = movie.details(id)
-    if flask_login.current_user.is_authenticated:
-        mo = models.Movie.query.filter_by(movie_id=id).first()
+    # if flask_login.current_user.is_authenticated:
+    movie_obj = models.Movie.query.filter_by(movie_id=id).first()
     #check that this movie hasn't been added before to the general movie db
     if flask_login.current_user.is_authenticated: # The user is logged in
-        if mo:
-            movie_obj = models.Movie.query.filter_by(movie_id=id).first()
-        else:
+        if not movie_obj:
             try:
                 movie_obj = models.Movie(title=m.title, description=m.overview, poster_path=m.poster_path, movie_id=m.id)
                 db.session.add(movie_obj)
             except:
-                pass
+                print('Movie_obj could not be added.')
 
     db.session.commit()
 
@@ -108,7 +106,17 @@ def add_movie(id):
     if flask_login.current_user.is_authenticated:
         return flask.render_template("user_profile.html", user=flask_login.current_user)
     
-
+@app.route("/delete/<int:id>")
+def delete_fav(id):
+    if flask_login.current_user.is_authenticated:
+        movie_obj = models.Movie.query.filter_by(movie_id=id).first()
+        try:
+            flask_login.current_user.fav_movies.remove(movie_obj)
+            db.session.commit()
+            flask.flash("Movie removed successfully", "success")
+        except:
+            print('Failed to remove movie from favs')
+    return flask.render_template("user_profile.html", user=flask_login.current_user)
 
 
 @app.route("/getmoviesindb")
@@ -123,9 +131,6 @@ def getmovies():
         return flask.redirect('/')
 
 
-@app.route("/delete/<int:id>")
-def delete_fav(id):
-    pass
 
 
 @app.route("/movie/<int:movie_id>/comment", methods=["GET", "POST"])

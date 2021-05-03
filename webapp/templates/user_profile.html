@@ -18,13 +18,15 @@
                   <div id="card-class" class="card h-100" style="border: none; margin-bottom: 28px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" id="poster">
                     {% if movie.poster_path != None %}
                     <img class="card-img-top" src="http://image.tmdb.org/t/p/original{{movie.poster_path}}" width="200px">
+                    <a class="btn btn-danger" style="position: absolute; top: 5px; right: 5px" href="{{ url_for('delete_fav', id=movie.movie_id) }}">Delete from favorites</a>
                     {% else %}
                     <img class="card-img-top" src="https://s.studiobinder.com/wp-content/uploads/2019/06/Movie-Poster-Templates-StudioBinder.jpg.webp" width="200px" height="356px">
                     {% endif %} 
                       <div class="card-body bg-dark text-white">
                         <a style="text-decoration: none; color: white; position:absolute; bottom:0px" href="http://127.0.0.1:5000/movie/{{movie.movie_id}}"><h5 class="card-title">{{movie.title}}</h5> </a>
                       </div>
-                  </div>
+                      
+                    </div>
                 </div>
               {% endfor %}
             {% endif %}

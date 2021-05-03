@@ -9,6 +9,7 @@
 </div>
 {% endblock %}
 {% block content %}
+{% if movies.total_pages > 1 %}
 <nav aria-label="Page navigation">
     <ul class="pagination justify-content-center pagination-lg bg-dark text-white">
     
@@ -19,15 +20,17 @@
       <li class="page-item {% if page == movies.total_pages %} disabled {% endif %}"><a class="page-link bg-dark text-white" href="http://127.0.0.1:5000/movies/query/{{query}}/{{page+1}}">Next</a></li>
     </ul>
   </nav>
+{% endif %}
 
 
   <div class="content bg-dark text-white">
     <ul class="list-group">
 
-    {% if movies == None %}
-        <li class="list-group-item" ><h2> The movie you typed doesn't exist in our database. Sorry! </h2></li>
+    {% if movies.total_results == 0 %}
+        <li class="list-group-item" ><h2> The search word you typed doesn't exist in our database. Sorry! </h2></li>
         
         {% else %}
+        
       <div class="row row-cols-1 row-cols-md-2 g-4">
           {% for movie in movies.results %}
             <div class="col-sm-6 col-md-4 col-lg-3 colMargin" style="padding-bottom: 10px">
@@ -43,9 +46,11 @@
               </div>
             </div>
           {% endfor %}
-        {% endif %}
+          
+    {% endif %}
 
       </div>
+      {% if movies.total_pages > 1 %}
       <nav aria-label="Page navigation">
         <ul class="pagination justify-content-center pagination-lg bg-dark text-white">
         
@@ -56,6 +61,7 @@
           <li class="page-item {% if page == movies.total_pages %} disabled {% endif %}"><a class="page-link bg-dark text-white" href="http://127.0.0.1:5000/movies/query/{{query}}/{{page+1}}">Next</a></li>
         </ul>
       </nav>
+      {% endif %}
   </div>      
     
 </div> 
