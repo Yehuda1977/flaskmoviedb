@@ -3,15 +3,16 @@
 {% block content %}
 {% if not current_user.is_authenticated %} 
 <div class="container-fluid bg-dark text-white">
-    <div class="p-5 mx-auto" style="width: 100%; text-align: center;">
+    <div class="p-5 mx-auto" style="width: 100%; text-align: center; margin-bottom: 1000px;">
       
-    <h3 class="display-4">Sign Up For a Movie Search Account</h3>
-        <p class="lead">Be able to save your favorite movies for future reference.</p>
+        <div class="row">
+            <div class="col">
+        
         <form method="POST" action="" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
-            <fieldset class="form-group" style="width: 65vw">
-                <legend class="border-bottom mb-4">Account Info</legend>
-                <div class="form-group">
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Sign Up For a Movie Search Account</legend>
+                <div class="container ">
                     {{ form.username.label(class="form-control-label") }}
 
                     {% if form.username.errors %}
@@ -22,10 +23,10 @@
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.username(class="form-control form-control-lg") }}
+                        <p>{{ form.username() }}</p>
                     {% endif %}
                 </div>
-                <div class="form-group">
+                <div class="container my-3">
                     {{ form.email.label(class="form-control-label") }}
                     {% if form.email.errors %}
                         {{ form.email(class="form-control form-control-lg is-invalid") }}
@@ -35,13 +36,13 @@
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.email(class="form-control form-control-lg") }}
+                       <p> {{ form.email() }}</p>
                     {% endif %}
                 </div>
                 
             
             
-                <div class="form-group">
+                <div class="container my-3">
                     {{ form.password.label(class="form-control-label") }}
                     {% if form.password.errors %}
                         {{ form.password(class="form-control form-control-lg is-invalid") }}
@@ -51,16 +52,18 @@
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.password(class="form-control form-control-lg") }}
+                        <p>{{ form.password() }}</p>
                     {% endif %}
                 </div>
                 
-                <div class="form-group">
-                    {{ form.submit(class="btn btn-outline-info") }}
+                <div class="container my-3">
+                    {{ form.submit(class="btn btn-info") }}
                 </div>
             </fieldset>
         </form>    
         </div>
+    </div>
+</div>
     <!-- <form class="d-flex" id="search-form" method="POST" action="">
     
         {{ form.hidden_tag() }}
@@ -80,21 +83,21 @@
         {{ form.submit() }}
     </div>  
     </form> -->
-    <div class="container-fluid bg-dark text-white" style="height: 1000px;">
-    </div>
+    
 {% endif %}
+       
 {% if current_user.is_authenticated %}  
-<div class="p-5 mx-auto" style="width: 100%; text-align: center;">
+<div class="p-5 mx-auto" style="width: 100%; text-align: center; margin-bottom: 1000px">
     <h3 class="display-4">Welcome {{ current_user.name }}</h3>
     <div class="container my-4">
-        <button class="btn btn-outline-success"><a style="text-decoration: none; color: white" href="{{url_for('movie_search')}}">Click Here to Search for Movies</a></button>
+        <button class="btn btn-info"><a style="text-decoration: none; color: white" href="{{url_for('movie_search')}}">Click Here to Search for Movies</a></button>
     </div>
     <div class="container my-4">
-        <button class="btn btn-outline-success"><a style="text-decoration: none; color: white" href="{{url_for('profile_page', user_id=current_user.id)}}">Click Here to See a List of Your Favorite Movies</a></button>
-      </div>
+        <button class="btn btn-info"><a style="text-decoration: none; color: white" href="{{url_for('profile_page', user_id=current_user.id)}}">Click Here to See a List of Your Favorite Movies</a></button>
+    </div>
 </div>
-<div class="container-fluid bg-dark text-white" style="height: 1000px;">
-</div>
+
+
 {% endif %}
 
 {% endblock %}
