@@ -8,13 +8,13 @@
       
         <h3 class="display-4 d-none d-lg-block">Welcome to Movie Search</h3>
         <hr class="my-4" />
-        <div class="container" style="width: 65vw">
+        <div class="container">
             <div class="container my-4">
-                <button class="btn btn-outline-success"><a style="text-decoration: none; color: white" href="{{url_for('movie_search')}}">Click Here to Search for Movies</a></button>
+                <button class="btn btn-outline-success"><a style="text-decoration: none; color: white" href="{{url_for('movie_search')}}">Search for Movies</a></button>
               </div>
         {% if current_user.is_authenticated %}    
           <div class="container my-4">
-            <button class="btn btn-outline-success"><a style="text-decoration: none; color: white" href="{{url_for('profile_page', user_id=current_user.id)}}">Click Here to See a List of Your Favorite Movies</a></button>
+            <button class="btn btn-outline-success"><a style="text-decoration: none; color: white" href="{{url_for('profile_page', user_id=current_user.id)}}">Your Favorites</a></button>
           </div>
         {% endif %}
         </div>
