@@ -5,7 +5,9 @@ import flask_login
 from flask_bcrypt import Bcrypt
 
 
-app = flask.Flask(__name__)
+app = flask.Flask(__name__, static_url_path='', 
+            static_folder='static',
+            template_folder='templates')
 
 bcrypt = Bcrypt(app)
 # In case you have: "A secret key is required to use..."

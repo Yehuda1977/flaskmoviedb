@@ -1,12 +1,16 @@
 import flask, flask_login
 from flask import url_for
 import requests
+import secrets
+import os
+from PIL import Image
 
 from . import app, db, fetch_movies      # . is webapp/
 
 from . import forms, models
 from tmdbv3api import Movie
 from . import bcrypt
+from flask_login import login_user, current_user, logout_user, login_required, login_manager
 
 movie = Movie()
 
@@ -183,13 +187,16 @@ def signup():
         if form.validate_on_submit():
             username = form.username.data
             password = form.password.data
+            email = form.email.data
             hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
             
-            user = models.User.query.filter_by(name=username).first()
+            is_user = models.User.query.filter_by(name=username).first()
 
-            if not user:
+            if is_user:
+                flask.flash("User with that name already exists. Please try again.", "danger")
             # Create user
-                user = models.User(name=username, password=hashed_password)
+            else:
+                user = models.User(name=username, password=hashed_password, email=email)
                 # Add it to the DB
                 db.session.add(user)
                 # Commit your changes
@@ -197,8 +204,8 @@ def signup():
                 print(f"{username} was registered successfully")
                 flask_login.login_user(user)
                 flask.flash("User logged in successfully !", "success")
-            else:
-                flask.flash("User with that name already exists. Please try again.", "danger")
+           
+                
 
     return flask.render_template("signup.html", form=form)
 
@@ -271,6 +278,47 @@ def profile_page(user_id):
 #        user
 # Step 4: In the quotes_list: Add a button next to each quote (if the user is authenticated) to make
 #        the quote his fav quote
+
+
+def save_picture(form_picture):
+    random_hex = secrets.token_hex(8)
+    _, f_ext = os.path.splitext(form_picture.filename)
+    picture_fn = random_hex + f_ext
+    picture_path = os.path.join(app.root_path, 'static/profile_pics', picture_fn)
+
+    output_size = (125, 125)
+    i = Image.open(form_picture)
+    i.thumbnail(output_size)
+    i.save(picture_path)
+
+    return picture_fn
+
+
+@app.route("/account", methods=['GET', 'POST'])
+def account():
+    if flask_login.current_user.is_authenticated:
+        form = forms.UpdateAccountForm()
+    else:
+        flask.flash("Sorry. You may not access the account page. You are not logged in.", "danger")
+        return flask.redirect(url_for("signin"))
+    if form.validate_on_submit():
+        if form.picture.data:
+            picture_file = save_picture(form.picture.data)
+            flask_login.current_user.image_file = picture_file
+        
+        flask_login.current_user.name = form.username.data
+        flask_login.current_user.email = form.email.data
+        db.session.commit()
+        flask.flash('Your account has been updated!', 'success')
+        return flask.redirect(url_for('account'))
+    elif flask.request.method == 'GET':
+        form.username.data = flask_login.current_user.name
+        form.email.data = flask_login.current_user.email
+    
+    image_file = url_for('static', filename='profile_pics/' + flask_login.current_user.image_file)
+    return flask.render_template('account.html', title='Account',
+                           image_file=image_file, form=form)
+
 
 
 

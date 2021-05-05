@@ -35,13 +35,14 @@ class User(db.Model, flask_login.UserMixin): # db.Model is required if you want 
 
     name = db.Column(db.String(64), unique=True, nullable=False)
     password = db.Column(db.String(64), nullable=False)
-
+    email = db.Column(db.String(120), unique=True, nullable=True)
+    image_file = db.Column(db.String(20), nullable=True, default='default.jpeg')
     # Step 2: relationship
     fav_movies = db.relationship("Movie", backref="users", secondary=user2movies)
     
 
     def __repr__(self):
-        return f"User('{self.name}')"
+        return f"User('{self.username}', '{self.email}', '{self.image_file}')"
 
 
 class Movie(db.Model):
