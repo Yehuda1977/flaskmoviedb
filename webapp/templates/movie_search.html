@@ -1,38 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container-fluid bg-dark text-white">
-    <div class="p-5 mx-auto" style="width: 100%; text-align: center;">
-      
-    <!-- <h3 class="display-4">Welcome to Movie Search</h3> -->
-        
-    <form class="d-flex" id="search-form" method="POST" action="" novalidate>
-        {{ form.hidden_tag() }}
+<main role="main" class="container"style="height: 100vh; opacity: 1; color: white">
+    <div class="container-fluid py-4" style="width: 65vw; height: 25vh; text-align: center;">
+        <form class="d-flex" id="search-form" method="POST" action="" novalidate>
+            {{ form.hidden_tag() }}
+            <div class="container" style="width: 75vw; margin-bottom:1000px">
+            <div class="container my-4"> 
+                <legend class="border-bottom mb-4">Enter in a search term to find a movie.</legend>
 
-        <!-- <p>Errors: {{ form.errors }}</p> -->
-        
-        <div class="container" style="width: 75vw; margin-bottom:1000px">
-          
-          <div class="container my-4">
-            
-            <legend class="border-bottom mb-4">Enter in a search term to find a movie.</legend>
+                    <p>{{ form.query() }}</p>
+                    <p>{{ form.submit(class="btn btn-info") }}</p>
+            </div>
+            </div>
+        </form>
+    </div>
 
-                <p>{{ form.query() }}</p>
-                <p>{{ form.submit(class="btn btn-info") }}</p>
-                
-           
-            
-            <!-- <small style="color:red">
-                {{ form.query.errors }}
-            </small> -->
-          </div>
-        </div>
-
-        
-
-    </form>
-</div>
-</div>
-
-    
+</main>
 {% endblock %}

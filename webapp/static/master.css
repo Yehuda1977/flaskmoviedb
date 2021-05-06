@@ -1,3 +1,12 @@
+.home {
+    background-image: url('background/erik-witsoe-GF8VvBgcJ4o-unsplash-edit.jpg'); 
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    opacity: 0.7;
+    background-color: black;
+}
+
 
 /*------------------------------------------
   Responsive Grid Media Queries - 1280, 1024, 768, 480

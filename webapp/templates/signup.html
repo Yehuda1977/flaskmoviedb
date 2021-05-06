@@ -2,19 +2,13 @@
 
 {% block content %}
 {% if not current_user.is_authenticated %} 
-<div class="container-fluid bg-dark text-white">
-    <div class="p-5 mx-auto" style="width: 100%; text-align: center; margin-bottom: 1000px;">
-      
-        <div class="row">
-            <div class="col">
-        
+<main role="main" class="container"style="height: 100vh; opacity: 1; color: white">
+    <div class="container-fluid py-4" style="width: 65vw; height: 25vh; text-align: center;">   
         <form method="POST" action="" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Sign Up For a Movie Search Account</legend>
-                <div class="container ">
                     {{ form.username.label(class="form-control-label") }}
-
                     {% if form.username.errors %}
                         {{ form.username(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
@@ -25,8 +19,7 @@
                     {% else %}
                         <p>{{ form.username() }}</p>
                     {% endif %}
-                </div>
-                <div class="container my-3">
+                
                     {{ form.email.label(class="form-control-label") }}
                     {% if form.email.errors %}
                         {{ form.email(class="form-control form-control-lg is-invalid") }}
@@ -38,11 +31,7 @@
                     {% else %}
                        <p> {{ form.email() }}</p>
                     {% endif %}
-                </div>
-                
-            
-            
-                <div class="container my-3">
+               
                     {{ form.password.label(class="form-control-label") }}
                     {% if form.password.errors %}
                         {{ form.password(class="form-control form-control-lg is-invalid") }}
@@ -54,35 +43,13 @@
                     {% else %}
                         <p>{{ form.password() }}</p>
                     {% endif %}
-                </div>
                 
-                <div class="container my-3">
                     {{ form.submit(class="btn btn-info") }}
-                </div>
+                
             </fieldset>
         </form>    
-        </div>
     </div>
-</div>
-    <!-- <form class="d-flex" id="search-form" method="POST" action="">
-    
-        {{ form.hidden_tag() }}
-        <div class="container" style="width: 65vw">
-          
-            <div class="container my-4">
-            <p>{{ form.username.label }}
-                {{ form.username() }}</p>
-            
-            <p>
-                {{ form.password.label }}
-            {{ form.password() }}
-            </p>
-            
-            </div>
-        
-        {{ form.submit() }}
-    </div>  
-    </form> -->
+</main>
     
 {% endif %}
        
