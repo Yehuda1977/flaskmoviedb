@@ -33,6 +33,7 @@ def movie_details(id):
     # form = forms.CommentForm()
     
     m = movie.details(id)
+    print(m)
     already_added = False
     #check that this movie hasn't been added before
     if flask_login.current_user.is_authenticated: # The user is logged in
